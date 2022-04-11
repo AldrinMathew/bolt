@@ -1,0 +1,12 @@
+name: bolt
+description: Expandable web server framework for Dart...
+version: 0.0.1
+homepage: https://github.com/aldrinsartfactory/bolt
+repository: https://github.com/aldrinsartfactory/bolt
+
+environment:
+  sdk: '>=2.16.2 <3.0.0'
+
+dev_dependencies:
+  lints: ^1.0.0
+  test: ^1.16.0
