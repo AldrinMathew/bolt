@@ -29,22 +29,30 @@ class BoltServer {
 
   bool get listening => _server != null;
 
-  Future<void> _bind(dynamic host, int port) async {
-    if (_sslOptions != null) {
-      _server ??= await HttpServer.bindSecure(
-        host,
-        port,
-        _sslOptions!._context,
-        requestClientCertificate: _sslOptions!._requestClientCertificate,
-        backlog: _options.backlog,
-        shared: _options.isSharedServer,
-        v6Only: _options.useIPv6Only,
-      );
-    } else {
-      _server ??= await HttpServer.bind(host, port,
+  Future<void> _bind(dynamic host, int port, bool reBind) async {
+    if ((_server == null) || reBind) {
+      if (reBind && (_server != null)) {
+        _server!.close();
+        _server = null;
+      }
+      if (_sslOptions != null) {
+        _server = await HttpServer.bindSecure(
+          host,
+          port,
+          _sslOptions!._context,
+          requestClientCertificate: _sslOptions!._requestClientCertificate,
           backlog: _options.backlog,
+          shared: _options.isSharedServer,
           v6Only: _options.useIPv6Only,
-          shared: _options.isSharedServer);
+        );
+      } else {
+        _server = await HttpServer.bind(host, port,
+            backlog: _options.backlog,
+            v6Only: _options.useIPv6Only,
+            shared: _options.isSharedServer);
+      }
+    } else {
+      throw Exception('Cannot bind again since reBind is false');
     }
   }
 }
