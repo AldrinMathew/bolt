@@ -23,17 +23,23 @@ class BoltServer {
 
   HttpServer? _server;
 
+  StreamSubscription? _subscription;
+
   dynamic host;
 
   int? port;
 
-  bool get listening => _server != null;
+  bool _listening = false;
+
+  bool get listening => (_server != null) && _listening;
 
   Future<void> _bind(dynamic host, int port, bool reBind) async {
     if ((_server == null) || reBind) {
       if (reBind && (_server != null)) {
         _server!.close();
         _server = null;
+        _subscription = null;
+        _listening = false;
       }
       if (_sslOptions != null) {
         _server = await HttpServer.bindSecure(
